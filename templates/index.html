@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Booking Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .status-badge.not-received {
+            background: #fee8e8;
+            color: #c92a2a;
+        }
+
+        .status-badge.received {
+            background: #e8f9f2;
+            color: #1b9254;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.02);
+        }
+
+        .status-badge.active {
+            border-color: currentColor;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #efefef;
+        }
+
+        .response-section {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .response-section.visible {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .response-text {
+            color: #333;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #667eea;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #c92a2a;
+            font-size: 13px;
+            margin-top: 8px;
+            padding: 10px;
+            background: #fee8e8;
+            border-radius: 6px;
+        }
+
+        .info-box {
+            background: #e7f5ff;
+            border-left: 4px solid #339af0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #1560bd;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏨 Booking Assistant</h1>
+            <p class="subtitle">AI-powered guest support</p>
+        </header>
+
+        <!-- Passport Status Section -->
+        <div class="section">
+            <div class="section-title">Passport Status</div>
+            <div class="status-toggle">
+                <span class="status-badge not-received active" data-status="not_received">
+                    ❌ Not Received
+                </span>
+                <span class="status-badge received" data-status="received">
+                    ✅ Received
+                </span>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Guest Message Section -->
+        <div class="section">
+            <div class="section-title">Guest Message</div>
+            <textarea 
+                id="guestMessage" 
+                placeholder="Ask your question here... (e.g., 'How do I check in?' or 'What should I do next?')"
+            ></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="btn-primary" id="sendBtn" onclick="sendMessage()">
+                Get AI Response
+            </button>
+            <button class="btn-secondary" onclick="clearForm()">Clear</button>
+        </div>
+
+        <!-- Response Section -->
+        <div class="response-section" id="responseSection">
+            <div class="response-label">AI Response</div>
+            <div class="response-text" id="responseText"></div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            💡 <strong>Demo scenario:</strong> Ask "How do I check in?" or "What should I do next?" and toggle the passport status to see how the AI responds differently.
+        </div>
+    </div>
+
+    <script>
+        let currentPassportStatus = "not_received";
+
+        // Handle status toggle
+        document.querySelectorAll(".status-badge").forEach(badge => {
+            badge.addEventListener("click", function() {
+                document.querySelectorAll(".status-badge").forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+                currentPassportStatus = this.dataset.status;
+            });
+        });
+
+        async function sendMessage() {
+            const message = document.getElementById("guestMessage").value.trim();
+            const sendBtn = document.getElementById("sendBtn");
+            const responseSection = document.getElementById("responseSection");
+            const responseText = document.getElementById("responseText");
+
+            if (!message) {
+                alert("Please enter a message");
+                return;
+            }
+
+            // Show loading state
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"><span class="spinner"></span> Sending...</span>';
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        passport_status: currentPassportStatus
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseText.textContent = data.response;
+                    responseSection.classList.add("visible");
+                } else {
+                    responseText.innerHTML = `<span class="error">Error: ${data.error || "Something went wrong"}</span>`;
+                    responseSection.classList.add("visible");
+                }
+            } catch (error) {
+                responseText.innerHTML = `<span class="error">Connection error: ${error.message}</span>`;
+                responseSection.classList.add("visible");
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = "Get AI Response";
+            }
+        }
+
+        function clearForm() {
+            document.getElementById("guestMessage").value = "";
+            document.getElementById("responseSection").classList.remove("visible");
+        }
+
+        // Allow Enter key to send message (Ctrl+Enter on Mac)
+        document.getElementById("guestMessage").addEventListener("keydown", function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
