@@ -60,7 +60,7 @@ def get_llm_response(guest_message: str, passport_status: str) -> str:
                 "model": LLM_MODEL,
                 "messages": messages,
                 "temperature": 0.7,
-                "max_tokens": 150
+                "max_tokens": 500
             },
             timeout=10
         )
