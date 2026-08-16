@@ -16,8 +16,8 @@ CORS(app)
 
 # Configuration
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_API_URL = os.getenv("LLM_API_URL", "https://googleapis.com")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
+LLM_API_URL = os.getenv("LLM_API_URL", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.6-flash")
 
 # System prompt for the AI assistant
 SYSTEM_PROMPT = """You are a helpful booking assistant for a hotel. You help guests with their check-in process.
